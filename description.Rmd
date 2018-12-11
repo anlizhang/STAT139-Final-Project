@@ -1,0 +1,108 @@
+---
+title: "Sentiment Analysis"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+install.packages("text2vec")
+```
+
+
+```{r}
+library(text2vec)
+library(data.table)
+library(magrittr)
+#data("movie_review")
+setDT(winedata)
+setkey(winedata, X)
+set.seed(2018)
+all_ids = winedata$X
+train_ids = sample(all_ids, 100000)
+test_ids = setdiff(all_ids, train_ids)
+train = winedata[J(train_ids)]
+test = winedata[J(test_ids)]
+```
+
+```{r}
+prep_fun = tolower
+tok_fun = word_tokenizer
+
+train$description <- as.character(train$description)      
+
+it_train = itoken(train$description, 
+             preprocessor = prep_fun, 
+             tokenizer = tok_fun, 
+             ids = train$X, 
+             progressbar = FALSE)
+vocab = create_vocabulary(it_train)
+```
+
+```{r}
+vectorizer = vocab_vectorizer(vocab)
+t1 = Sys.time()
+dtm_train = create_dtm(it_train, vectorizer)
+print(difftime(Sys.time(), t1, units = 'sec'))
+```
+
+
+
+```{r}
+pruned_vocab = prune_vocabulary(vocab, 
+                                 term_count_min = 10, 
+                                 doc_proportion_max = 0.5,
+                                 doc_proportion_min = 0.001)
+vectorizer = vocab_vectorizer(pruned_vocab)
+# create dtm_train with new pruned vocabulary vectorizer
+t1 = Sys.time()
+dtm_train  = create_dtm(it_train, vectorizer)
+print(difftime(Sys.time(), t1, units = 'sec'))
+
+dim(dtm_train)
+```
+
+```{r}
+install.packages("glmnet", repos = "http://cran.us.r-project.org")
+```
+
+
+```{r}
+library(glmnet)
+fit = glmnet(dtm_train, train[['points']])
+```
+
+```{r}
+tmp_coeffs <- coef(fit)
+coefs = data.frame(name = tmp_coeffs@Dimnames[[1]][tmp_coeffs@i + 1], coefficient = tmp_coeffs@x)
+```
+
+```{r}
+coefs <- coefs[row.names(unique(coefs["name"])),]
+#coefs = coefs[!duplicated(coefs[,'name',]
+
+#mean(coefs$name == "rich")
+```
+
+```{r}
+coefs <- coefs[-c(1), ]
+```
+
+```{r}
+extremecoefs <- coefs[abs(coefs$coefficient) > 0.1, ] 
+```
+
+```{r}
+#extremecoefs <- extremecoefs[-c(8), ]
+finalcoefs <- extremecoefs
+```
+
+
+```{r}
+plot(coefs$name, coefs$coefficient,  xlab="Words", ylab="Effect on Response")
+text(extremecoefs$name, extremecoefs$coefficient, paste(extremecoefs$name, round(extremecoefs$coefficient, 2), sep=", "), cex=0.6)
+
+```
