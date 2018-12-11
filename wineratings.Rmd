@@ -95,8 +95,23 @@ plot(winedata$year,winedata$points)
 ```
 
 ```{r}
-model1 = lm(points~countrycat+year+taster_name+log(price),data=winedata)
+model1 = lm(points~log(price),data=winedata)
 summary(model1)
 ```
 
+
+```{r}
+model2 = lm(points~countrycat+year+taster_name+price,data=winedata)
+summary(model2)
+```
+
+```{r}
+model3 = lm(points~countrycat+year+taster_name+log(price),data=winedata)
+summary(model3)
+```
+
+```{r}
+model4 = lm(points~.+countrycat*price,data=winedata)
+summary(model4)
+```
 
