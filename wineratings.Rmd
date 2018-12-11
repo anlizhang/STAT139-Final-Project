@@ -61,6 +61,7 @@ winedata$countrycat = country_cat
 
 
 
+
 ```{r}
 plot(winedata$price,winedata$points)
 hist(winedata$points)
