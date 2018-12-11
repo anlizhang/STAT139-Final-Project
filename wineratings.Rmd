@@ -12,9 +12,60 @@ winedata = read.csv('winemag-data-130k-v2.csv')
 ```
 
 ```{r}
+# create "Other' country
+country_cat = vector()
+for (i in 1:nrow(winedata)) {
+  if (winedata$country[i] == 'Italy') {
+    country_cat = c(country_cat,'Italy')
+  }
+  else if (winedata$country[i] == 'US') {
+    country_cat = c(country_cat,'US')
+  }
+  else if (winedata$country[i] == 'France') {
+    country_cat = c(country_cat,'France')
+  }
+  else if (winedata$country[i] == 'Spain') {
+    country_cat = c(country_cat,'Spain')
+  }
+  else if (winedata$country[i] == 'Portugal') {
+    country_cat = c(country_cat,'Portugal')
+  }
+  else if (winedata$country[i] == 'Austria') {
+    country_cat = c(country_cat,'Austria')
+  }
+  else if (winedata$country[i] == 'Chile') {
+    country_cat = c(country_cat,'Chile')
+  }
+  else if (winedata$country[i] == 'Argentina') {
+    country_cat = c(country_cat,'Argentina')
+  }
+  else if (winedata$country[i] == 'Australia') {
+    country_cat = c(country_cat,'Australia')
+  }
+  else if (winedata$country[i] == 'New Zealand') {
+    country_cat = c(country_cat,'New Zealand')
+  }
+  else if (winedata$country[i] == 'Germany') {
+    country_cat = c(country_cat,'Germany')
+  }
+  else {
+    country_cat = c(country_cat, 'Other')
+  }
+}
+```
+
+```{r}
+# add column to dataframe
+winedata$countrycat = country_cat
+```
+
+
+
+```{r}
 plot(winedata$price,winedata$points)
 hist(winedata$points)
 model1 <- summary(lm(winedata$price ~ winedata$points))
 print(model1)
 ```
+
 
