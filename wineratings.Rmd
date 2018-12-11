@@ -86,6 +86,20 @@ winedata$year = cleanyear
 ```
 
 ```{r}
+# reduce dataset
+half = sample(1:nrow(winedata),replace=FALSE)
+subdata = winedata[half[1:65000],]
+```
+
+```{r}
+# split into train and test
+train_index = sample(1:nrow(subdata))
+train = subdata
+```
+
+
+
+```{r}
 plot(winedata$price,winedata$points)
 hist(winedata$points)
 ```
@@ -95,23 +109,23 @@ plot(winedata$year,winedata$points)
 ```
 
 ```{r}
-model1 = lm(points~log(price),data=winedata)
+model1 = lm(points~log(price),data=subdata)
 summary(model1)
 ```
 
 
 ```{r}
-model2 = lm(points~countrycat+year+taster_name+price,data=winedata)
+model2 = lm(points~countrycat+year+taster_name+price,data=subdata)
 summary(model2)
 ```
 
 ```{r}
-model3 = lm(points~countrycat+year+taster_name+log(price),data=winedata)
+model3 = lm(points~countrycat+year+taster_name+log(price),data=subdata)
 summary(model3)
 ```
 
 ```{r}
-model4 = lm(points~.+countrycat*price,data=winedata)
+model4 = lm(points~countrycat+taster_name+year+log(price)+countrycat*taster_name,data=subdata)
 summary(model4)
 ```
 
