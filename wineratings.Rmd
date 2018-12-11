@@ -12,6 +12,10 @@ winedata = read.csv('winemag-data-130k-v2.csv')
 ```
 
 ```{r}
+newwinedata = read.csv('new_wine_data.csv')
+```
+
+```{r}
 # create "Other' country
 country_cat = vector()
 for (i in 1:nrow(winedata)) {
@@ -54,19 +58,46 @@ for (i in 1:nrow(winedata)) {
 }
 ```
 
+
 ```{r}
-# add column to dataframe
-winedata$countrycat = country_cat
+# extract year
+cleanyear = vector()
+for (i in 1:nrow(newwinedata)) {
+  if (is.na(newwinedata$title[i])) {
+    cleanyear = c(cleanyear,NA)
+  }
+  else if (as.numeric(newwinedata$title[i]) < 1700) {
+    cleanyear = c(cleanyear,NA)
+  }
+  else if (as.numeric(newwinedata$title[i]) > 2018) {
+    cleanyear = c(cleanyear,NA)
+  }
+  else {
+    cleanyear = c(cleanyear,as.numeric(newwinedata$title[i]))
+  }
+}
 ```
 
 
+```{r}
+# add columns to dataframe
+winedata$countrycat = country_cat
+winedata$year = cleanyear
+```
 
 
 ```{r}
 plot(winedata$price,winedata$points)
 hist(winedata$points)
-model1 <- summary(lm(winedata$price ~ winedata$points))
-print(model1)
+```
+
+```{r}
+plot(winedata$year,winedata$points)
+```
+
+```{r}
+model1 = lm(points~countrycat+year+taster_name+log(price),data=winedata)
+summary(model1)
 ```
 
 
