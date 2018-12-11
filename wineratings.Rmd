@@ -60,17 +60,26 @@ winedata$countrycat = country_cat
 ```
 
 
+```{r}
+# check if price vs. rating is linear
+plot(winedata$price,winedata$points)
+plot(log(winedata$price),winedata$points)
+```
 
 ```{r}
-plot(winedata$price,winedata$points)
+# check normality of response variable
 hist(winedata$points)
+```
+
+
+```{r}
 model1 <- summary(lm(winedata$price ~ winedata$points))
 print(model1)
 ```
 
 ```{r}
 # test multiple regression
-multmodel = lm(points~country+taster_name+price,data=winedata)
+multmodel = lm(points~countrycat+taster_name+price,data=winedata)
 summary(multmodel)
 ```
 
