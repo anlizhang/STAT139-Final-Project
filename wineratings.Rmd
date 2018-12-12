@@ -140,45 +140,47 @@ summary(model2)
 ```
 
 ```{r}
-model3 = lm(points~countrycat+year+taster_name+log(price),data=train)
+model3 = lm(points~taster_name*log(price),data=train)
 summary(model3)
 ```
 
 ```{r}
-model4 = lm(points~countrycat+taster_name+year+log(price)+(countrycat+taster_name+year+log(price))^2,data=train)
+model4 = lm(points~countrycat+year+taster_name+log(price),data=train)
 summary(model4)
 ```
 
+
 ```{r}
-model0 = lm(points~1,data=train)
-model5 = step(model3, scope = list(lower = model0, upper = model4), direction = "both",trace=0)
+model5 = lm(points~countrycat+taster_name+year+log(price)+(countrycat+taster_name+year+log(price))^2,data=train)
 summary(model5)
 ```
+
 
 ```{r}
 # backward selection
-model5 = step(model4, direction = "backward", trace=0)
-summary(model5)
-```
-
-```{r}
-# forward selection
-model6 = step(model1, scope = list(upper = model4), direction = "forward", trace=0)
+model6 = step(model5, direction = "backward", trace=0)
 summary(model6)
 ```
 
 ```{r}
+# forward selection
+model7 = step(model1, scope = list(upper = model5), direction = "forward", trace=0)
+summary(model7)
+```
+
+
+```{r}
 # stepwise
 model0 = lm(points~1,data=train)
-model7 = step(model3, scope = list(lower = model0, upper = model4), direction = "both",trace=0)
-summary(model7)
+model8 = step(model4, scope = list(lower = model0, upper = model5), direction = "both",trace=0)
+summary(model8)
 ```
 
 
 
 ```{r}
 # check assumptions of best model
-plot(model4)
+plot(model5)
 ```
 
 **Cross Validation**
