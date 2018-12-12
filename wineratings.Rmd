@@ -200,3 +200,31 @@ for(i in 1:n.reps) {
 }
 ```
 
+```{r}
+plot(train$taster_name,train$points)
+```
+
+
+```{r}
+library(lme4)
+library(MuMIn)
+mixedmodel = lmer(points~log(price) +countrycat+year + (1+log(price)|taster_name), data=train)
+coef(mixedmodel)
+```
+
+
+```{r}
+r.squaredGLMM(mixedmodel)
+```
+
+```{r}
+mixedmodel2 = lmer(points~year + (1+year|taster_name), data=train)
+coef(mixedmodel2)
+```
+
+```{r}
+modelhi = lm(points~log(price)*taster_name,data=train)
+summary(modelhi)
+```
+
+
