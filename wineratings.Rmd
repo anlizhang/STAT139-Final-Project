@@ -129,6 +129,10 @@ model1 = lm(points~log(price),data=train)
 summary(model1)
 ```
 
+```{r}
+plot(model1)
+```
+
 
 ```{r}
 model2 = lm(points~countrycat,data=train)
@@ -152,8 +156,45 @@ summary(model5)
 ```
 
 ```{r}
+# backward selection
+model5 = step(model4, direction = "backward", trace=0)
+summary(model5)
+```
+
+```{r}
+# forward selection
+model6 = step(model1, scope = list(upper = model4), direction = "forward", trace=0)
+summary(model6)
+```
+
+```{r}
+# stepwise
+model0 = lm(points~1,data=train)
+model7 = step(model3, scope = list(lower = model0, upper = model4), direction = "both",trace=0)
+summary(model7)
+```
+
+
+
+```{r}
 # check assumptions of best model
 plot(model4)
 ```
 
 **Cross Validation**
+
+```{r}
+cv.folds = 5
+n.reps = 100
+pred.error = rep(NA, n.reps)
+
+# rmse as loss function
+rmse = function(predicted, observed) {
+  return(sqrt( mean( (predicted - observed)^2 ) ))
+}
+
+for(i in 1:n.reps) {
+  cv.assignment = cvFolds(nrow(train), K = cv.folds, type = 'random')
+}
+```
+
