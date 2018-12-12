@@ -7,6 +7,8 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+**Data cleaning**
+
 ```{r}
 winedata = read.csv('winemag-data-130k-v2.csv')
 ```
@@ -87,32 +89,119 @@ winedata$year = cleanyear
 
 
 ```{r}
-plot(winedata$price,winedata$points)
-hist(winedata$points)
+# reduce dataset
+set.seed(2018)
+half = sample(1:nrow(winedata),replace=FALSE)
+subdata = winedata[half[1:20000],]
 ```
 
 ```{r}
-plot(winedata$year,winedata$points)
+# split into train and test
+set.seed(2019)
+indices = sample(1:nrow(subdata))
+train = subdata[indices[1:16000],]
+test = subdata[indices[16001:20000],]
+```
+
+
+**Exploring assumptions**
+
+```{r}
+# scatterplots of numerical predictors
+plot(train$price,train$points)
+plot(train$year,train$points)
 ```
 
 ```{r}
-model1 = lm(points~log(price),data=winedata)
+# let's try log price
+plot(log(train$price),train$points)
+```
+
+
+```{r}
+# is response variable normal?
+hist(train$points)
+```
+
+**Models**
+
+```{r}
+model1 = lm(points~log(price),data=train)
 summary(model1)
 ```
 
+```{r}
+plot(model1)
+```
+
 
 ```{r}
-model2 = lm(points~countrycat+year+taster_name+price,data=winedata)
+model2 = lm(points~countrycat,data=train)
 summary(model2)
 ```
 
 ```{r}
-model3 = lm(points~countrycat+year+taster_name+log(price),data=winedata)
+model3 = lm(points~taster_name*log(price),data=train)
 summary(model3)
 ```
 
 ```{r}
+<<<<<<< HEAD
 model4 = lm(points~.+year*price,data=winedata)
+=======
+model4 = lm(points~countrycat+year+taster_name+log(price),data=train)
+>>>>>>> b901eed1074f93322e724833f2ef82b47e2ceef1
 summary(model4)
+```
+
+
+```{r}
+model5 = lm(points~countrycat+taster_name+year+log(price)+(countrycat+taster_name+year+log(price))^2,data=train)
+summary(model5)
+```
+
+
+```{r}
+# backward selection
+model6 = step(model5, direction = "backward", trace=0)
+summary(model6)
+```
+
+```{r}
+# forward selection
+model7 = step(model1, scope = list(upper = model5), direction = "forward", trace=0)
+summary(model7)
+```
+
+
+```{r}
+# stepwise
+model0 = lm(points~1,data=train)
+model8 = step(model4, scope = list(lower = model0, upper = model5), direction = "both",trace=0)
+summary(model8)
+```
+
+
+
+```{r}
+# check assumptions of best model
+plot(model5)
+```
+
+**Cross Validation**
+
+```{r}
+cv.folds = 5
+n.reps = 100
+pred.error = rep(NA, n.reps)
+
+# rmse as loss function
+rmse = function(predicted, observed) {
+  return(sqrt( mean( (predicted - observed)^2 ) ))
+}
+
+for(i in 1:n.reps) {
+  cv.assignment = cvFolds(nrow(train), K = cv.folds, type = 'random')
+}
 ```
 

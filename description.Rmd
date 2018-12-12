@@ -76,6 +76,13 @@ fit = glmnet(dtm_train, train[['points']])
 ```
 
 ```{r}
+y_predicted <- predict(fit, newx = dtm_train)
+
+rsq = 1 - fit$cvm/var(train[['points']])
+```
+
+
+```{r}
 tmp_coeffs <- coef(fit)
 coefs = data.frame(name = tmp_coeffs@Dimnames[[1]][tmp_coeffs@i + 1], coefficient = tmp_coeffs@x)
 ```
