@@ -112,7 +112,7 @@ summary(model3)
 ```
 
 ```{r}
-model4 = lm(points~.+countrycat*price,data=winedata)
+model4 = lm(points~.+year*price,data=winedata)
 summary(model4)
 ```
 
