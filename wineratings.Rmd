@@ -136,21 +136,17 @@ plot(model1)
 
 
 ```{r}
-model2 = lm(points~countrycat,data=train)
+model25 = lm(points~countrycat,data=train)
 summary(model2)
 ```
 
 ```{r}
-model3 = lm(points~taster_name*log(price),data=train)
+model35 = lm(points~taster_name*log(price),data=train)
 summary(model3)
 ```
 
 ```{r}
-<<<<<<< HEAD
-model4 = lm(points~.+year*price,data=winedata)
-=======
 model4 = lm(points~countrycat+year+taster_name+log(price),data=train)
->>>>>>> b901eed1074f93322e724833f2ef82b47e2ceef1
 summary(model4)
 ```
 
@@ -203,5 +199,9 @@ rmse = function(predicted, observed) {
 for(i in 1:n.reps) {
   cv.assignment = cvFolds(nrow(train), K = cv.folds, type = 'random')
 }
+```
+
+```{r}
+anova(model2, model3)
 ```
 
