@@ -151,3 +151,9 @@ model5 = step(model3, scope = list(lower = model0, upper = model4), direction = 
 summary(model5)
 ```
 
+```{r}
+# check assumptions of best model
+plot(model4)
+```
+
+**Cross Validation**
