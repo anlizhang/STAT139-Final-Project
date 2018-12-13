@@ -1,5 +1,5 @@
 ---
-title: "STAT139 Final Project"
+title: "Taster Bias"
 output: pdf_document
 ---
 
@@ -95,159 +95,12 @@ half = sample(1:nrow(winedata),replace=FALSE)
 subdata = winedata[half[1:20000],]
 ```
 
-```{r}
-# split into train and test
-set.seed(2019)
-indices = sample(1:nrow(subdata))
-train = subdata[indices[1:16000],]
-test = subdata[indices[16001:20000],]
-```
-
-
-**Exploring assumptions**
-
-```{r}
-# scatterplots of numerical predictors
-plot(train$price,train$points)
-plot(train$year,train$points)
-```
-
-```{r}
-# let's try log price
-plot(log(train$price),train$points)
-```
-
-
-```{r}
-# is response variable normal?
-hist(train$points)
-```
-
-**Models**
-
-```{r}
-model1 = lm(points~log(price),data=train)
-summary(model1)
-```
-
-```{r}
-plot(model1)
-```
-
-
-```{r}
-model25 = lm(points~countrycat,data=train)
-summary(model2)
-```
-
-```{r}
-model35 = lm(points~taster_name*log(price),data=train)
-summary(model3)
-```
-
-```{r}
-model4 = lm(points~countrycat+year+taster_name+log(price),data=train)
-summary(model4)
-```
-
-
-```{r}
-model5 = lm(points~countrycat+taster_name+year+log(price)+(countrycat+taster_name+year+log(price))^2,data=train)
-summary(model5)
-```
-
-
-```{r}
-# backward selection
-model6 = step(model5, direction = "backward", trace=0)
-summary(model6)
-```
-
-```{r}
-# forward selection
-model7 = step(model1, scope = list(upper = model5), direction = "forward", trace=0)
-summary(model7)
-```
-
-
-```{r}
-# stepwise
-model0 = lm(points~1,data=train)
-model8 = step(model4, scope = list(lower = model0, upper = model5), direction = "both",trace=0)
-summary(model8)
-```
-
-
-
-```{r}
-# check assumptions of best model
-plot(model5)
-```
-
-**Cross Validation**
-
-```{r}
-cv.folds = 5
-n.reps = 100
-pred.error = rep(NA, n.reps)
-
-# rmse as loss function
-rmse = function(predicted, observed) {
-  return(sqrt( mean( (predicted - observed)^2 ) ))
-}
-
-for(i in 1:n.reps) {
-  cv.assignment = cvFolds(nrow(train), K = cv.folds, type = 'random')
-}
-```
-
-```{r}
-anova(model2, model3)
-```
-
-
-```{r}
-plot(train$taster_name,train$points)
-```
-
-
-```{r}
-library(lme4)
-library(MuMIn)
-mixedmodel = lmer(points~log(price)+ (1+log(price)|taster_name), data=subdata)
-coef(mixedmodel)
-```
-
-
-```{r}
-r.squaredGLMM(mixedmodel)
-```
-
-```{r}
-mixedmodel2 = lmer(points~year + (1+year|taster_name), data=train)
-coef(mixedmodel2)
-```
-
-```{r}
-modelhi = lm(points~log(price)*taster_name,data=train)
-summary(modelhi)
-```
-
-```{r}
-model11 = lm(points~taster_name*log(price),data=subdata)
-model10 = lm(points~taster_name+log(price),data=subdata)
-anova(model10,model11)
-```
-
-```{r}
-summary(model11)
-```
+**Exploring Variables**
 
 
 ```{r}
 mean(subdata$year,na.rm=TRUE)
 sd(subdata$year,na.rm=TRUE)
-min(subdata$year,na.rm=TRUE)
 ```
 
 ```{r}
@@ -256,9 +109,85 @@ sd(subdata$price,na.rm=TRUE)
 ```
 
 ```{r}
-summary(model10)
+sort(table(subdata$countrycat))
+```
+
+
+**Exploring assumptions**
+
+```{r}
+# scatterplots of numerical predictors
+plot(subdata$price,subdata$points)
+plot(subdata$year,subdata$points)
 ```
 
 ```{r}
-summary(model11)
+# let's try log price
+plot(log(subdata$price),subdata$points)
 ```
+
+
+```{r}
+# is response variable normal? yes!
+hist(subdata$points)
+```
+
+**Models**
+
+
+```{r}
+# multiple regression models
+model3 = lm(points~taster_name+log(price),data=subdata)
+model4 = lm(points~taster_name*log(price),data=subdata)
+
+# ESS F-test
+anova(model3,model4)
+```
+
+```{r}
+summary(model4)
+```
+
+```{r}
+# test assumptions
+plot(model3,which=1)
+plot(model3,which=2)
+```
+
+
+```{r}
+library(lme4)
+library(MuMIn)
+model5= lmer(points~log(price)+ (1+log(price)|taster_name), data=subdata)
+coef(model5)
+```
+
+```{r}
+# graph of different slopes
+plot(log(subdata$price),subdata$points)
+abline(81.94873,1.147588,col='red')
+abline(80.24401,2.583945,col='orange')
+abline(80.14031,3.145383,col='yellow')
+abline(81.31806,1.547335,col='green')
+abline(79.82979,2.744373,col='blue')
+abline(81.25291,1.540113,col='purple')
+abline(81.70581,2.233771,col='pink')
+abline(79.35154,2.933398,col='tan')
+abline(80.19697,2.548956,col='grey')
+abline(81.32863,2.163239,col='aliceblue')
+abline(78.78175,2.889989,col='black')
+abline(80.45799,2.699848,col='yellowgreen')
+abline(77.56290,3.158798,col='sienna1')
+abline(82.81653,1.952558,col='turquoise')
+abline(80.10232,2.677584,col='salmon3')
+abline(79.32226,2.693732,col='peachpuff')
+```
+
+
+```{r}
+# conditional r-squared of mixed model
+r.squaredGLMM(model5)
+```
+
+
+
