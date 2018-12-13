@@ -102,7 +102,7 @@ extremecoefs <- coefs[abs(coefs$coefficient) > 0.1, ]
 
 ```{r}
 #extremecoefs <- extremecoefs[-c(8), ]
-finalcoefs <- extremecoefs
+extremecoefs <- extremecoefs[-c(5,7,23,9),]
 ```
 
 
@@ -165,5 +165,9 @@ print(summary(model2))
 
 ```{r}
 anova(model1, model2)
+```
+
+```{r}
+winedata$region_1[winedata$region_1 == ""]
 ```
 
