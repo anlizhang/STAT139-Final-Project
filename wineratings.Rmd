@@ -208,7 +208,7 @@ plot(train$taster_name,train$points)
 ```{r}
 library(lme4)
 library(MuMIn)
-mixedmodel = lmer(points~log(price) +countrycat+year + (1+log(price)|taster_name), data=train)
+mixedmodel = lmer(points~log(price)+ (1+log(price)|taster_name), data=subdata)
 coef(mixedmodel)
 ```
 
@@ -227,4 +227,33 @@ modelhi = lm(points~log(price)*taster_name,data=train)
 summary(modelhi)
 ```
 
+```{r}
+model11 = lm(points~taster_name*log(price),data=subdata)
+model10 = lm(points~taster_name+log(price),data=subdata)
+anova(model10,model11)
+```
+
+```{r}
+summary(model11)
+```
+
+
+```{r}
+mean(subdata$year,na.rm=TRUE)
+sd(subdata$year,na.rm=TRUE)
+min(subdata$year,na.rm=TRUE)
+```
+
+```{r}
+mean(subdata$price,na.rm=TRUE)
+sd(subdata$price,na.rm=TRUE)
+```
+
+```{r}
+summary(model10)
+```
+
+```{r}
+summary(model11)
+```
 
