@@ -22,7 +22,7 @@ setDT(winedata)
 setkey(winedata, X)
 set.seed(2018)
 all_ids = winedata$X
-train_ids = sample(all_ids, 100000)
+train_ids = sample(all_ids, 20000)
 test_ids = setdiff(all_ids, train_ids)
 train = winedata[J(train_ids)]
 test = winedata[J(test_ids)]
@@ -72,8 +72,13 @@ install.packages("glmnet", repos = "http://cran.us.r-project.org")
 
 ```{r}
 library(glmnet)
-fit = glmnet(dtm_train, train[['points']])
+fit = glmnet(dtm_train, train[['points']], alpha=.5)
 ```
+
+```{r}
+print(fit)
+```
+
 
 ```{r}
 tmp_coeffs <- coef(fit)
@@ -97,12 +102,72 @@ extremecoefs <- coefs[abs(coefs$coefficient) > 0.1, ]
 
 ```{r}
 #extremecoefs <- extremecoefs[-c(8), ]
-finalcoefs <- extremecoefs
+extremecoefs <- extremecoefs[-c(5,7,23,9),]
 ```
 
 
 ```{r}
 plot(coefs$name, coefs$coefficient,  xlab="Words", ylab="Effect on Response")
 text(extremecoefs$name, extremecoefs$coefficient, paste(extremecoefs$name, round(extremecoefs$coefficient, 2), sep=", "), cex=0.6)
+```
+
+```{r}
+hist(coefs$coefficient, breaks=seq(-0.5,0.5,l=20))
+```
+
+```{r}
+importantcoefs <- coefs[abs(coefs$coefficient) > 0.05, ] 
+importantcoefs$name
+```
+
+```{r}
+vocab2 <- vocab[vocab$term %in% importantcoefs$name, ]
+
+vectorizer2 = vocab_vectorizer(vocab2)
+t1 = Sys.time()
+dtm_lm = create_dtm(it_train, vectorizer2)
+print(difftime(Sys.time(), t1, units = 'sec'))
+```
+
+
+
+```{r}
+print(dim(dtm_lm))
+dtm_df <- as.data.frame(as.matrix(dtm_lm))
+```
+
+
+```{r}
+#dtm_df[["country"]] <- train$countrycat
+#dtm_df[["year"]] <- train$year
+#dtm_df[["taster_name"]] <- train$taster_name
+train$price[is.na(train$price)] <- mean(train$price,na.rm=TRUE)  
+dtm_df[["price"]] <- log(train$price)
 
 ```
+
+
+```{r}
+model1 <- lm(train$points ~ .-price, data = dtm_df)
+```
+
+```{r}
+print(summary(model1))
+```
+
+```{r}
+model2 <- lm(train$points ~ ., data = dtm_df)
+```
+
+```{r}
+print(summary(model2))
+```
+
+```{r}
+anova(model1, model2)
+```
+
+```{r}
+winedata$region_1[winedata$region_1 == ""]
+```
+

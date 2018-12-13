@@ -87,6 +87,7 @@ winedata$countrycat = country_cat
 winedata$year = cleanyear
 ```
 
+
 ```{r}
 # reduce dataset
 set.seed(2018)
@@ -135,12 +136,12 @@ plot(model1)
 
 
 ```{r}
-model2 = lm(points~countrycat,data=train)
+model25 = lm(points~countrycat,data=train)
 summary(model2)
 ```
 
 ```{r}
-model3 = lm(points~taster_name*log(price),data=train)
+model35 = lm(points~taster_name*log(price),data=train)
 summary(model3)
 ```
 
@@ -201,6 +202,11 @@ for(i in 1:n.reps) {
 ```
 
 ```{r}
+<<<<<<< HEAD
+anova(model2, model3)
+```
+
+=======
 plot(train$taster_name,train$points)
 ```
 
@@ -257,3 +263,4 @@ summary(model10)
 summary(model11)
 ```
 
+>>>>>>> edc657f7755430aac6202f57eb634634e60c8f76
