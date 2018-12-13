@@ -202,11 +202,11 @@ for(i in 1:n.reps) {
 ```
 
 ```{r}
-<<<<<<< HEAD
 anova(model2, model3)
 ```
 
-=======
+
+```{r}
 plot(train$taster_name,train$points)
 ```
 
@@ -262,5 +262,3 @@ summary(model10)
 ```{r}
 summary(model11)
 ```
-
->>>>>>> edc657f7755430aac6202f57eb634634e60c8f76
